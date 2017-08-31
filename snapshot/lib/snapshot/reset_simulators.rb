@@ -45,7 +45,7 @@ module Snapshot
       make_phone_watch_pair
     end
 
-    def self.runtimes_available()
+    def self.runtimes_available
       list_runtimes_output = `xcrun simctl list runtimes`
       all_runtime_type = list_runtimes_output.scan(/(.*)\s\(.*\((.*)\)/)
       # == Runtimes ==
