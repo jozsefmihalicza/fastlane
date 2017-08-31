@@ -21,14 +21,7 @@ module Snapshot
         `xcrun simctl delete #{id}`
       end
 
-      all_runtime_type = `xcrun simctl list runtimes`.scan(/(.*)\s\(.*\((.*)\)/)
-      # == Runtimes ==
-      # iOS 9.3 (9.3 - 13E233) (com.apple.CoreSimulator.SimRuntime.iOS-9-3)
-      # iOS 10.0 (10.0 - 14A345) (com.apple.CoreSimulator.SimRuntime.iOS-10-0)
-      # iOS 10.1 (10.1 - 14B72) (com.apple.CoreSimulator.SimRuntime.iOS-10-1)
-      # iOS 10.2 (10.2 - 14C89) (com.apple.CoreSimulator.SimRuntime.iOS-10-2)
-      # tvOS 10.1 (10.1 - 14U591) (com.apple.CoreSimulator.SimRuntime.tvOS-10-1)
-      # watchOS 3.1 (3.1 - 14S471a) (com.apple.CoreSimulator.SimRuntime.watchOS-3-1)
+      all_runtime_type = runtimes_available
       ios_versions_ids = filter_runtimes(all_runtime_type, 'iOS', ios_versions)
       tv_version_ids = filter_runtimes(all_runtime_type, 'tvOS')
       watch_versions_ids = filter_runtimes(all_runtime_type, 'watchOS')
@@ -50,6 +43,26 @@ module Snapshot
       end
 
       make_phone_watch_pair
+    end
+
+    def self.runtimes_available()
+      list_runtimes_output = `xcrun simctl list runtimes`
+      all_runtime_type = list_runtimes_output.scan(/(.*)\s\(.*\((.*)\)/)
+      # == Runtimes ==
+      # iOS 9.3 (9.3 - 13E233) (com.apple.CoreSimulator.SimRuntime.iOS-9-3)
+      # iOS 10.0 (10.0 - 14A345) (com.apple.CoreSimulator.SimRuntime.iOS-10-0)
+      # iOS 10.1 (10.1 - 14B72) (com.apple.CoreSimulator.SimRuntime.iOS-10-1)
+      # iOS 10.2 (10.2 - 14C89) (com.apple.CoreSimulator.SimRuntime.iOS-10-2)
+      # tvOS 10.1 (10.1 - 14U591) (com.apple.CoreSimulator.SimRuntime.tvOS-10-1)
+      # watchOS 3.1 (3.1 - 14S471a) (com.apple.CoreSimulator.SimRuntime.watchOS-3-1)
+
+      all_runtime_type += list_runtimes_output.scan(/(.*)\s\(.*- (.*)/)
+      # == Runtimes ==
+      # iOS 11.0 (11.0 - 15A5361a) - com.apple.CoreSimulator.SimRuntime.iOS-11-0
+      # tvOS 11.0 (11.0 - 15J5368a) - com.apple.CoreSimulator.SimRuntime.tvOS-11-0
+      # watchOS 4.0 (4.0 - 15R5363a) - com.apple.CoreSimulator.SimRuntime.watchOS-4-0
+
+      all_runtime_type
     end
 
     def self.create(device_type, os_versions, os_name = 'iOS')
